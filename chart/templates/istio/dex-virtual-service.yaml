@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: dex-virtual-service
+spec:
+  gateways:
+  - {{ .Values.istio.namespace }}/{{ .Values.istio.publicGateway }}
+  hosts:
+  - {{ .Values.dex.publicURL }}
+  http:
+  - route:
+    - destination:
+        host: dex.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 5556

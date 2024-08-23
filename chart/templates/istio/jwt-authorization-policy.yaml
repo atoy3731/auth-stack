@@ -1,0 +1,14 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: jwt-authz
+  namespace: {{ .Values.istio.namespace }}
+spec:
+  rules:
+  - when:
+    - key: request.auth.claims[iss]
+      values:
+      - https://{{ .Values.dex.publicURL }}/dex
+  selector:
+    matchLabels:
+      protect: enabled

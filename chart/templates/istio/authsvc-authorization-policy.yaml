@@ -1,0 +1,14 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: authservice-authz
+  namespace: {{ .Values.istio.namespace }}
+spec:
+  action: CUSTOM
+  provider:
+    name: authservice
+  rules:
+  - {}
+  selector:
+    matchLabels:
+      protect: enabled

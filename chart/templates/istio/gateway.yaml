@@ -1,0 +1,34 @@
+{{- if .Values.istio.gateway.create }}
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: protected
+  namespace: istio-system
+spec:
+  selector:
+    {{- with .Values.istio.gateway.selector }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  servers:
+  - hosts:
+      {{- with .Values.istio.gateway.hosts }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+    tls:
+      httpsRedirect: true
+  - hosts:
+      {{- with .Values.istio.gateway.hosts }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: {{ .Values.istio.gateway.certSecret }}
+      mode: SIMPLE
+{{- end }}

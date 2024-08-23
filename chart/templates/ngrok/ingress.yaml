@@ -1,0 +1,19 @@
+{{- if .Values.ngrok.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dex
+spec:
+  ingressClassName: ngrok
+  rules:
+  - host: {{ .Values.dex.publicURL }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: auth-stack-dex-ngrok
+            port:
+              number: 5556
+        path: /
+        pathType: ImplementationSpecific
+{{- end }}

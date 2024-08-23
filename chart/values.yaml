@@ -1,0 +1,83 @@
+
+config:
+  logLevel: debug
+  skipVerifyPeerCert: false
+  periodicFetchIntervalSec: 10
+
+istio:
+  namespace: istio-system # Where your 'protected' gateway is located (default: istio-system)
+  gateway:
+    create: true # Whether to create the gateway
+    certSecret: protected-cert # Certificate to use in gateway config
+    selector: # The label of your ingress gateway for protected traffic
+      app: protected-ingressgateway
+    hosts:
+    - app1.example.com
+    - "*.other.com"
+
+ngrok:
+  enabled: false
+
+dex:
+  publicURL: public-dex.example.com
+  config:
+    connectors:
+    - config:
+        clientID: github-oauth-client-id
+        clientSecret: github-oauth-client-secret
+        orgs:
+        - name: GitHubOrgName
+          teams:
+          - owner
+        redirectURI: https://public-dex.example.com/dex/callback
+      id: github
+      name: GitHub
+      type: github
+    frontend:
+      theme: dark
+    issuer: https://public-dex.example.com/dex
+    loadAllGroups: true
+    oauth2:
+      skipApprovalScreen: true
+    staticClients:
+    - id: example-app
+      name: Example App
+      redirectURIs:
+      - https://app.example.com/c/oidc/callback
+      secret: abcdefg1234567
+
+      # AuthService Stuff (Only Required if `authSvcEnabled` is true)
+      authSvcEnabled: true
+      hostname: app.example.com
+      logoutPath: ""
+      logoutRedirectUri: ""
+
+    storage:
+      config:
+        inCluster: true
+      type: kubernetes
+    web:
+      http: 0.0.0.0:5556
+      https: 0.0.0.0:5554
+      tlsCert: /etc/certs/tls.crt
+      tlsKey: /etc/certs/tls.key
+  https:
+    enabled: true
+  replicaCount: 3
+  volumeMounts:
+  - mountPath: /etc/certs
+    name: dex-cert
+    readOnly: true
+  volumes:
+  - name: dex-cert
+    secret:
+      secretName: dex-cert
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/istio-ecosystem/authservice/authservice
+  pullPolicy: IfNotPresent
+  tag: "1.0.1"
+
+imagePullSecrets: []

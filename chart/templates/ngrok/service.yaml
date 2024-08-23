@@ -1,0 +1,16 @@
+{{- if .Values.ngrok.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-stack-dex-ngrok
+spec:
+  ports:
+  - name: http
+    port: 5556
+    protocol: TCP
+    targetPort: http
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: dex
+  type: ClusterIP
+{{- end }}

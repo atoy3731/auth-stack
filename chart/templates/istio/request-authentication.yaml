@@ -1,0 +1,13 @@
+apiVersion: security.istio.io/v1
+kind: RequestAuthentication
+metadata:
+  name: jwt-authn
+  namespace: {{ .Values.istio.namespace }}
+spec:
+  jwtRules:
+  - forwardOriginalToken: true
+    issuer: https://{{ .Values.dex.publicURL }}/dex
+    jwksUri: https://{{ .Values.dex.publicURL }}/dex/keys
+  selector:
+    matchLabels:
+      protect: enabled
