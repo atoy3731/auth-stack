@@ -1,0 +1,20 @@
+{{- range .Values.protectedServices }}
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: {{ .name }}-vs
+  namespace: istio-system
+spec:
+  gateways:
+  - istio-system/protected
+  hosts:
+  {{- with .hosts }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  http:
+  - route:
+    - destination:
+        host: {{ .target.service }}
+        port:
+          number: {{ .target.port }}
+{{- end }}

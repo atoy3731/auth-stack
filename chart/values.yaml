@@ -12,11 +12,19 @@ istio:
     selector: # The label of your ingress gateway for protected traffic
       app: protected-ingressgateway
     hosts:
-    - app1.example.com
+    - app.example.com
     - "*.other.com"
 
 ngrok:
   enabled: false
+
+protectedServices:
+- name: demo-app
+  hosts:
+  - app.example.com
+  target:
+    service: app.example.svc.cluster.local
+    port: 8080
 
 dex:
   publicURL: public-dex.example.com
